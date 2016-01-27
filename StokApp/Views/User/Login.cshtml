@@ -1,0 +1,56 @@
+﻿@{ Layout = null;}
+@model StokApp.Models.ViewModels.LoginVM
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stok Yönetimi - Giriş</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="~/css/themes/default/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <link href="~/_assets/css/jqm-demos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+    <script src="~/js/jquery.js"></script>
+    <script src="~/_assets/js/index.js"></script>
+    <script src="~/js/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+    <div data-role="page" class="jqm-demos jqm-home" id='@(ViewBag.PageName==null?"page":@ViewBag.PageName)'>
+        <div data-role="header" class="jqm-header">
+            <h2>
+                <img style="margin-left:50px;" src="~/_assets/img/logo.png" />
+            </h2>
+            <p><span>STOK YÖNETİMİ</span></p>
+        </div><!-- /header -->
+
+
+        @using (Html.BeginForm("Login", "User", FormMethod.Post, new { data_ajax = "false" ,style="margin-left:50px; margin-right:50px; margin-top:40px;"}))
+        {
+            @Html.AntiForgeryToken()
+
+            <label for="Name">Kullanıcı Adı</label>
+            @Html.TextBoxFor(m => m.Username)
+            @Html.ValidationMessageFor(m => m.Username)
+
+            <label for="Name">Şifre</label>
+            @Html.PasswordFor(m => m.Password)
+            @Html.ValidationMessageFor(m => m.Password)
+
+            @Html.CheckBoxFor(m => m.RememberMe)
+            <label for="RememberMe">Beni Hatırla</label>
+
+            <button class="ui-shadow ui-btn ui-corner-all" type="submit">Giriş Yap</button>
+        }
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+            <p>Stok Yönetimi@*<span class="jqm-version"></span>*@</p>
+            <p>2015</p>
+        </div><!-- /footer -->
+        <!-- TODO: This should become an external panel so we can add input to markup (unique ID) -->
+    </div><!-- /page -->
+    @*@Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)*@
+    @*<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>*@
+
+</body>
+</html>

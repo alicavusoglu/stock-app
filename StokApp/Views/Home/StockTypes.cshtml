@@ -1,0 +1,81 @@
+﻿@model List<StokApp.Models.ViewModels.StockTypeVM>
+@using StokApp.Infrastructure
+@{ var tempData = new StokApp.Models.ViewModels.StockTypeVM();}
+<div role="main" class="ui-content jqm-content">
+    <h2>Birim Tanımları <a href='@Url.Action("yeni-birim","Home")' class="ui-btn ui-btn-inline">Yeni Birim Ekle</a></h2>
+    <div>
+        @if (TempData["ResultMessage"] != null)
+        {
+            <div id="resultMessage">
+                <div class="ui-body ui-body-a ui-corner-all" style="background-color:#B2FFBA;">
+                    <h3>İşlem Sonucu</h3>
+                    <p>@TempData["ResultMessage"]</p>
+                </div>
+            </div>
+        }
+        <table data-role="table" id="tbl" data-mode="columntoggle" class="ui-responsive table-stroke">
+            <thead>
+                <tr>
+                    <th style="display:none;">Id</th>
+                    <th>@MetaDataHelpers.GetDisplayName(tempData, m => m.TypeName)</th>
+                    <th data-priority="2">
+                        <abbr title='@MetaDataHelpers.GetDisplayName(tempData, m => m.PiecesInType)'>Parça Ad.</abbr>
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div><!--/demo-html -->
+</div>
+
+@section js{
+    <script type="text/javascript">
+        function getData() {
+            $.getJSON('@Url.Action("GetStockTypes")', null, function (data) {
+                debugger;
+                var tbody = $("#tbl").find("tbody");
+                $(tbody).html("");
+                for (var i = 0; i < data.data.length; i++) {
+                    $(tbody).append("<tr>" +
+                                            "<td style='display:none;'>" + data.data[i].Id + "</td>" +
+                                            "<td>" + data.data[i].TypeName +
+                                                    "<div>" +
+                                                    "<button onclick='editStockType(" + data.data[i].Id + ")' class='ui-btn ui-mini ui-btn-inline'>Düzenle</button>" +
+                                                    "<button onclick='deleteStockType(" + data.data[i].Id + ")' class='ui-btn ui-mini ui-btn-inline'>Sil</button>" +
+                                                    "</div>" +
+                                            "</td>" +
+                                            "<td>" + data.data[i].PiecesInType + "</td>" +
+                                            "</tr>");
+                }
+            });
+        }
+
+        function editStockType(id) {
+            window.location.href = '@Url.Action("birim-duzenle")' + "/" + id;
+        }
+
+        function deleteStockType(id) {
+            var r = confirm("Silmek İstiyor musunuz?");
+            if (r == true)
+                $.getJSON('@Url.Action("DeleteStockType")',
+                    { id: id },
+                    function (data) {
+                        debugger;
+                        if (data.Result == true) {
+                            var trs = $("#tbl").find("tbody").find("tr");
+                            for (var i = 0; i < trs.length; i++)
+                                if (parseInt($($($(trs)[i]).find("td")[0]).html()) == data.Id)
+                                    $($(trs)[i]).remove();
+                        }
+                    });
+        }
+
+        $(function () {
+            getData();
+
+            if ($("#resultMessage") != undefined) {
+                var timer = setInterval(function () { $("#resultMessage").fadeOut(); clearInterval(timer); }, 5000);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,23 @@
+﻿@using StokApp.Models
+@model StockType
+@{ string formAction = Model.Id == 0 ? "yeni-birim" : "birim-duzenle";}
+<div role="main" class="ui-content jqm-content">
+
+    <h2>Birim Tanımı Ekle</h2>
+    <div>
+        @using (Html.BeginForm(formAction, "Home", FormMethod.Post, new { data_ajax = "false" }))
+            {
+            @Html.HiddenFor(m => m.Id)
+
+            <label for="TypeName">Birim Adı</label>
+            @Html.TextBoxFor(m => m.TypeName)
+            @Html.ValidationMessageFor(m => m.TypeName)
+
+            <label for="PiecesInType">Birimdeki Parça Adedi</label>
+            @Html.TextBoxFor(m => m.PiecesInType, new { type = "number", data_clear_btn = "false", min = "0" })
+            @Html.ValidationMessageFor(m => m.PiecesInType)
+
+            <button class="ui-shadow ui-btn ui-corner-all" type="submit">Kaydet</button>
+        }
+    </div>
+</div>

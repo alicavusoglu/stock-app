@@ -1,0 +1,81 @@
+﻿@using StokApp.Models.ViewModels
+@model StockTransactionEditVM
+
+@{ string formAction = Model.Id == 0 ? "yeni-hareket" : "hareket-duzenle";}
+
+<style type="text/css">
+    .controlgroup-textinput {
+        padding-top: .22em;
+        padding-bottom: .22em;
+    }
+</style>
+
+<div role="main" class="ui-content jqm-content">
+    <h2>Stok Hareketi Ekle</h2>
+    <div>
+        @using (Html.BeginForm(formAction, "Home", FormMethod.Post, new { data_ajax = "false" }))
+        {
+            @Html.HiddenFor(m => m.Id)
+
+            @Html.TextBox("Date", Model.Date.ToString("dd.MM.yyyy"),new { data_role="date"})
+
+            @Html.LabelFor(m => m.ProductRef)
+            <select name="ProductRef" id="ProductRef" required>
+                @foreach (var item in (List<StokApp.Models.Product>)ViewBag.Products)
+                {
+                    if (item.Id == Model.ProductRef)
+                    {
+                        <option value='@item.Id' selected>@item.Name</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Id'>@item.Name</option>
+                    }
+                }
+            </select>
+            @Html.ValidationMessageFor(m => m.ProductRef)
+
+            <label for="amount">Miktar</label>
+            <div data-role="controlgroup" data-type="horizontal">
+                @Html.TextBoxFor(m => m.Amount, new { type = "number", data_clear_btn = "false", min = "0", data_wrapper_class = "controlgroup-textinput ui-btn", style="width:100px", placeholder="0"})
+                @*<button id="textStockType" disabled>Adet</button>*@
+
+                @if (Model.TransactionType == StockTransactionType.Input)
+                {
+                    @Html.RadioButtonFor(m => m.TransactionType, ((int)StockTransactionType.Input), new { @checked = "checked" , @id = "TransactionTypeInput" })
+                    <label for="TransactionTypeInput">Giriş</label>
+                    @Html.RadioButtonFor(m => m.TransactionType, ((int)StockTransactionType.Output), new { @id = "TransactionTypeOutput" })
+                    <label for="TransactionTypeOutput">Çıkış</label>
+                }
+                else
+                {
+                    @Html.RadioButtonFor(m => m.TransactionType, ((int)StockTransactionType.Input), new { @id = "TransactionTypeInput" })
+                    <label for="TransactionTypeInput">Giriş</label>
+                    @Html.RadioButtonFor(m => m.TransactionType, ((int)StockTransactionType.Output), new { @checked = "checked", @id = "TransactionTypeOutput" })
+                    <label for="TransactionTypeOutput">Çıkış</label>
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+
+            @Html.LabelFor(m => m.Description)
+            @Html.TextAreaFor(m => m.Description)
+
+            <button class="ui-shadow ui-btn ui-corner-all" type="submit">Kaydet</button>
+        }
+    </div>
+</div>
+
+

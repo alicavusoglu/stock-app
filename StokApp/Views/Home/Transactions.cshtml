@@ -1,0 +1,85 @@
+﻿@model List<StokApp.Models.ViewModels.StockTransactionListVM>
+@using StokApp.Infrastructure
+@{ var tempData = new StokApp.Models.ViewModels.StockTransactionListVM();}
+<div role="main" class="ui-content jqm-content">
+    <h2>Stok Hareketleri</h2>
+    <div>
+
+        @if (TempData["ResultMessage"] != null)
+        {
+    <div id="resultMessage">
+        <div class="ui-body ui-body-a ui-corner-all" style="background-color:#B2FFBA;">
+            <h3>İşlem Sonucu</h3>
+            <p>@TempData["ResultMessage"]</p>
+        </div>
+    </div>
+        }
+
+        <table data-role="table" id="tbl" data-mode="columntoggle" class="ui-responsive table-stroke">
+            <thead>
+                <tr>
+                    <th style="display:none;">Id</th>
+                    <th data-priority="2">@MetaDataHelpers.GetDisplayName(tempData, m => m.Date)</th>
+                    <th>@MetaDataHelpers.GetDisplayName(tempData, m => m.ProductText)</th>
+                    <th data-priority="1">@MetaDataHelpers.GetDisplayName(tempData, m => m.Amount)</th>
+                    <th data-priority="3">@MetaDataHelpers.GetDisplayName(tempData, m => m.Description)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div><!--/demo-html -->
+</div>
+
+@section js{
+    <script type="text/javascript">
+        function getData() {
+            $.getJSON('@Url.Action("GetTransactions")', null, function (data) {
+                debugger;
+                var tbody = $("#tbl").find("tbody");
+                $(tbody).html("");
+                for (var i = 0; i < data.data.length; i++) {
+                    $(tbody).append("<tr>" +
+                                            "<td style='display:none;'>" + data.data[i].Id + "</td>" +
+                                            "<td>" + data.data[i].Date + "</td>" +
+                                            "<td>" + data.data[i].ProductText +
+                                                    "<div>" +
+                                                    "<button onclick='editTransaction(" + data.data[i].Id + ")' class='ui-btn ui-mini ui-btn-inline'>Düzenle</button>" +
+                                                    "<button onclick='deleteTransaction(" + data.data[i].Id + ")' class='ui-btn ui-mini ui-btn-inline'>Sil</button>" +
+                                                    "</div>" +
+                                            "</td>" +
+                                            "<td>" + data.data[i].Amount + "</td>" +
+                                            "<td>" + data.data[i].Description + "</td>" +
+                                            "</tr>");
+                }
+            });
+        }
+
+        function editTransaction(id) {
+            window.location.href = '@Url.Action("hareket-duzenle")' + "/" + id;
+        }
+
+        function deleteTransaction(id) {
+            var r = confirm("Silmek İstiyor musunuz?");
+            if (r == true)
+                $.getJSON('@Url.Action("DeleteTransaction")',
+                    { id: id },
+                    function (data) {
+                        debugger;
+                        if (data.Result == true) {
+                            var trs = $("#tbl").find("tbody").find("tr");
+                            for (var i = 0; i < trs.length; i++)
+                                if (parseInt($($($(trs)[i]).find("td")[0]).html()) == data.Id)
+                                    $($(trs)[i]).remove();
+                        }
+                    });
+        }
+
+        $(function () {
+            getData();
+
+            if ($("#resultMessage") != undefined) {
+                var timer = setInterval(function () { $("#resultMessage").fadeOut(); clearInterval(timer); }, 5000);
+            }
+        });
+    </script>
+}

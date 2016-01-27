@@ -1,0 +1,33 @@
+﻿@model StokApp.Models.Product
+
+@{ string formAction = Model.Id == 0 ? "yeni-urun" : "urun-duzenle";}
+<div role="main" class="ui-content jqm-content">
+    <h2>Ürün Ekle</h2>
+    <div>
+        @using (Html.BeginForm(formAction, "Home", FormMethod.Post, new { data_ajax = "false" }))
+        {
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.CreatedDate)
+
+            <label for="Name">Ürün Adı</label>
+            @Html.TextBoxFor(m => m.Name)
+            @Html.ValidationMessageFor(m => m.Name)
+
+            <label for="StockTypeRef">Stok Birimi</label>
+            <select name="StockTypeRef" id="StockTypeRef" required>
+                @foreach (var item in (List<StokApp.Models.StockType>)ViewBag.StockTypes)
+                {
+                    if (item.Id == Model.StockTypeRef)
+                    {
+                        <option value='@item.Id' selected>@item.TypeName (@item.PiecesInType adet)</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Id'>@item.TypeName (@item.PiecesInType adet)</option>
+                    }
+                }
+            </select>
+            <button class="ui-shadow ui-btn ui-corner-all" type="submit">Kaydet</button>
+        }
+    </div>
+</div>
